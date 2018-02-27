@@ -741,7 +741,7 @@
               var list = "";
               $.each( data.Data, function( key, val ) {
                   items.push(val.CoinName);
-                  list += "<li data-jets=" + val.CoinName.toLowerCase() + ">" + val.CoinName + "</li>";
+                  list += "<li data-jets=" + val.CoinName.toLowerCase() + "><img style='max-width:30px;max-height:30px;' src='https://cryptocompare.com" + val.ImageUrl + "'>" + val.CoinName + "</li>";
               });
               $("#jetsContent").append(list);
           }).complete(function() {
