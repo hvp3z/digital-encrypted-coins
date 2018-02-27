@@ -9,7 +9,7 @@
 
   <!-- Favicons -->
   <link href="img/favicon.png" rel="icon">
-  <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="img/favicon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700|Open+Sans:300,300i,400,400i,700,700i" rel="stylesheet">
@@ -32,12 +32,6 @@
   <!-- Main Stylesheet File -->
   <link href="css/style.css" rel="stylesheet">
 
-  <!-- =======================================================
-    Theme Name: Cryptocurrencies
-    Theme URL: https://bootstrapmade.com/Cryptocurrencies-bootstrap-landing-page-template/
-    Author: BootstrapMade.com
-    License: https://bootstrapmade.com/license/
-  ======================================================= -->
 </head>
 
 <body>
@@ -57,7 +51,7 @@
       <nav id="nav-menu-container">
         <ul class="nav-menu">
           <li class="menu-active"><a href="#intro">Home</a></li>
-          <li><a href="#about">Coins names</a></li>
+          <li><a href="#call-to-action">Coins names</a></li>
           <li><a href="#features">Crypto words</a></li>
           <li><a href="#pricing">FAQ</a></li>
           <li><a href="#team">Donate</a></li>
@@ -666,19 +660,25 @@
       </div>
     </section><!-- #contact -->
 
-    <!-- Modal Trigger -->
-    <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a>
-
     <!-- Modal Structure -->
-    <div id="modal1" class="modal bottom-sheet">
-        <div class="modal-content">
-            <h4>Modal Header</h4>
-            <p>A bunch of text</p>
-        </div>
-        <div class="modal-footer">
-            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-        </div>
-    </div>
+  <div class="modal fade modal-full-height" id="currencyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-frame modal-dialog modal-bottom" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="modalTitle">Modal title</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body" id="modalBody">
+                  ...
+              </div>
+              <div class="modal-footer" id="modalFooter">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </div>
+      </div>
+  </div>
 
   </main>
 
@@ -744,23 +744,45 @@
           }
       });
 
-      $(".open-modal").click(function() {
-          alert( "Handler for .click() called." );
-          //$('#modal1').modal('open');
-      });
-
       $( document ).ready(function() {
-          $.getJSON( "https://min-api.cryptocompare.com/data/all/coinlist", function( data ) {
+          $.getJSON( "https://min-api.cryptocompare.com/data/all/coinlist?extraParams=cryptocurrencies-decypher", function( data ) {
               var items = [];
               var list = "";
+              var baseImageUrl = data.BaseImageUrl;
               $.each( data.Data, function( key, val ) {
                   items.push(val.CoinName);
-                  list += "<li class='text-dark open-modal' data-jets=" + val.Name.toLowerCase() + "><img style='max-width:30px;max-height:30px; padding-right:15px;' src='https://cryptocompare.com" + val.ImageUrl + "'>" + val.CoinName + "</li>";
+                  list += "<li class='text-dark open-modal' data-jets=" + val.Name.toLowerCase() + ">" + val.CoinName + "</li>";
+                  list += "<div id=" + val.Name.toLowerCase() + ">" +
+                                "<span class='currencyImageUrl'>" + baseImageUrl + val.ImageUrl + "</span>" +
+                                "<span class='currencyName'>" + val.CoinName + "</span>" +
+                          "</div>";
               });
 
               $("#jetsContent").append(list);
           }).complete(function() {
               $('body').css({ "opacity": "1" });
+
+              $(".open-modal").click(function() {
+                  // Empty the modal data
+                  $('#modalTitle').html();
+                  $('#modalBody').html();
+                  $('#modalFooter').html();
+
+                  var currency = $(this).attr("data-jets");
+                  var currencyImageUrl = $("#" + currency).find(".currencyImageUrl").text();
+                  var currencyName = $("#" + currency).find(".currencyName").text();
+                  var linksBottom = "<a href='https://coinmarketcap.com/currencies/" + currencyName + "'>CoinMarketCap link</a>  <br/>  <a href='https://www.worldcoinindex.com/coin/" + currencyName + "'>WorldCoinIndex link</a>";
+
+                  $.getJSON("https://min-api.cryptocompare.com/data/price?fsym=" + currency.toUpperCase() + "&tsyms=USD,EUR", function( data ) {
+                      $('#modalTitle').html("<img style='max-width: 50px; max-height: 50px; margin-right:15px' src=" + currencyImageUrl + " />" + currencyName);
+                      $('#modalBody').html("1 " +  currencyName + " = " + data.EUR + " Euros</br>1 " +  currencyName + " = " + data.USD + " USD <br/>" + linksBottom);
+                      $('#modalFooter').html();
+                  }).complete(function() {
+                      $('#currencyModal').modal('show');
+                  });
+
+              });
+
           });
 
           var jets = new Jets({
@@ -769,8 +791,6 @@
           });
 
       });
-
-
   </script>
 
 </body>
