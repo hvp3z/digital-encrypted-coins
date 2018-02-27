@@ -107,16 +107,12 @@
     <section id="call-to-action">
       <div class="container">
 
-        <div class="md-form">
-          <div class="text-center" style="color:white !important;">
-              <input type="search" id="jetsSearch" class="form-control mdb-autocomplete" placeholder="Search Currency..." />
-              <!-- <label for="form-autocomplete" class="active">What Currency do you want to investigate</label> -->
-              <ul id="jetsContent">
-              </ul>
-            </div>
-          </div>
+        <div class="md-form text-center">
+            <input type="search" id="jetsSearch" class="form-control mdb-autocomplete" placeholder="Search Currency..." />
+            <label style="font-size:18pt;" for="form-autocomplete" class="active">What Currency do you want to investigate</label>
+            <ul id="jetsContent" class="mdb-autocomplete-wrap">
+            </ul>
         </div>
-
       </div>
     </section><!-- #call-to-action -->
 
@@ -670,6 +666,20 @@
       </div>
     </section><!-- #contact -->
 
+    <!-- Modal Trigger -->
+    <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a>
+
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal bottom-sheet">
+        <div class="modal-content">
+            <h4>Modal Header</h4>
+            <p>A bunch of text</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+        </div>
+    </div>
+
   </main>
 
   <!--==========================
@@ -727,12 +737,16 @@
   <script type="text/javascript">
 
       $('#jetsSearch').keyup(function() {
-          console.log($(this).val());
-          if ($(this).val() != "") {
-            $("#jetsContent").show();
+          if ($(this).val() !== "") {
+            $("#jetsContent").slideDown( 350, function() {});
           } else {
-            $("#jetsContent").hide();
+            $("#jetsContent").slideUp( 350, function() {});
           }
+      });
+
+      $(".open-modal").click(function() {
+          alert( "Handler for .click() called." );
+          //$('#modal1').modal('open');
       });
 
       $( document ).ready(function() {
@@ -741,8 +755,9 @@
               var list = "";
               $.each( data.Data, function( key, val ) {
                   items.push(val.CoinName);
-                  list += "<li data-jets=" + val.CoinName.toLowerCase() + "><img style='max-width:30px;max-height:30px;' src='https://cryptocompare.com" + val.ImageUrl + "'>" + val.CoinName + "</li>";
+                  list += "<li class='text-dark open-modal' data-jets=" + val.Name.toLowerCase() + "><img style='max-width:30px;max-height:30px; padding-right:15px;' src='https://cryptocompare.com" + val.ImageUrl + "'>" + val.CoinName + "</li>";
               });
+
               $("#jetsContent").append(list);
           }).complete(function() {
               $('body').css({ "opacity": "1" });
@@ -754,6 +769,7 @@
           });
 
       });
+
 
   </script>
 
